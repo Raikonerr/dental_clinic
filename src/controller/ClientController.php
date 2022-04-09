@@ -16,13 +16,13 @@ class ClientController extends JwtController{
         {
             require_once('src/model/authentication.php');
             require_once('src/config/Header.php');
-            if(isset($_POST['email'])){
+            if(isset($_POST['idC'])){
                 $auth = new Authentication();
-                $result = $auth->signin($_POST['email']);
+                $result = $auth->signin($_POST['idC']);
                 if($result){
-                    echo json_encode($result);
+                    echo Authentication::message('Bienvenue', false);
                 }else{
-                    echo Authentication::message('l`utilisateur n`existe pas');
+                    echo Authentication::message('l`utilisateur n`existe pas',true);
 
                 }
             }else{
@@ -58,18 +58,30 @@ class ClientController extends JwtController{
                     }
          
         }
+        public function read($date){
 
-
-
+            require_once('src/config/header.php');
+            require_once('src/model/connection.php');
+            $result=new Database();
+            if($_SERVER['REQUEST_METHOD']=="GET"){
+                  if($result->read($date)){
+                        echo json_encode($result->read($date));
+                  }else{
+                        echo json_encode(["message"=>"aucun creneau dipso pour le moment"]);
+                  }
+            }else  echo json_encode(
+                  array('message' => 'change method to GET')
+              );
+            }
 
         public function addRdv(){
             require_once('src/config/header.php');
             require_once('src/model/connection.php');
 
             if($_SERVER['REQUEST_METHOD'] == 'POST'){
-                    if(!empty($_POST['idC']) && !empty($_POST['sujet_rdv']) && !empty($_POST['creneau_start'])&& !empty($_POST['creneau_end']) ){
+                    if(!empty($_POST['idC']) && !empty($_POST['sujet_rdv']) && !empty($_POST['idCr']) ){
                         $db = new Database();
-                        $res = $db->insert('rdv' , ['sujet_rdv','creneau_start','creneau_end','idC'],[$_POST['sujet_rdv'],$_POST['creneau_start'],$_POST['creneau_end'],$_POST['idC']]);
+                        $res = $db->insert('rdv' , ['sujet_rdv','idCr','idC'],[$_POST['sujet_rdv'],$_POST['idCr'],$_POST['idC']]);
                         if($res){
                             echo Database::message('Merci pour votre confiance', false);
                         }else {
@@ -93,6 +105,24 @@ class ClientController extends JwtController{
                 $result = $db->delete('rdv', $params[2]);
                 if($result){
                     echo Database::message('le rendez-vous est annullé avec succes', false);
+                }else {
+                    echo Database::message('l`operation est echouer!', true);
+                }
+            }else {
+                echo Database::message('Probleme de serveur', true);
+            }
+        }
+
+        public function getRdv() {
+            require_once('src/config/Header.php');
+            require_once('src/model/connection.php');
+            if($_SERVER['REQUEST_METHOD'] == 'GET') {
+                $params = explode('/', $_GET['p']);
+                // echo $params[2];
+                $db = new Database();
+                $result = $db->fetchRdv();
+                if($result){
+                    echo Database::message('Voici les appointements disponible', false);
                 }else {
                     echo Database::message('l`operation est echouer!', true);
                 }

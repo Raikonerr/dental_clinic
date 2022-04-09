@@ -70,6 +70,7 @@ class Database
 		return $query->execute();
 	}
 
+	
 	public function checkUserExist($id) {
 		$str = "SELECT * FROM `client` WHERE idC=?";
 		$query=$this->conn->prepare($str);
@@ -81,6 +82,13 @@ class Database
 
 	public static function message($content, $status) {
 	    return json_encode(array('message' => $content, 'error' => $status));
+	}
+
+	public function read($date){
+		$query=$this->conn->prepare("SELECT * FROM `creneau` where creneau.idCr not in(select idCr from rdv where date=?)");	
+		$query->execute(array($date));
+		$result = $query->fetchAll(PDO::FETCH_ASSOC);
+		return $result;
 	}
 
 }

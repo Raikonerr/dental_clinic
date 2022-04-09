@@ -18,12 +18,13 @@ class Authentication {
         }
     }
 
-    public function signin($id) {
+     public function signin($id) {
         require_once('connection.php');
         $db = new Database();
         $result = $db->checkUserExist($id);
         return $result;
     }
+
 
     public static function message($content, $status) {
 	    return json_encode(array('message' => $content, 'error' => $status));
