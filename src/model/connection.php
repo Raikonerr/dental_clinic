@@ -91,4 +91,19 @@ class Database
 		return $result;
 	}
 
+	public function readSingleRdv($id){
+		$query=$this->conn->prepare("SELECT r.idR , r.idCr , r.idC , sujet_rdv , date , debut , fin FROM `rdv` r join creneau c on r.idCr = c.idCr WHERE idC = ?");	
+		$query->execute(array($id));
+		$result = $query->fetch(PDO::FETCH_ASSOC);
+		return $result;
+	}
+
+	public function readRdv($date){
+		$query=$this->conn->prepare("SELECT * FROM `rdv` where rdv.date=?");	
+		$query->execute(array($date));
+		$result = $query->fetchAll(PDO::FETCH_ASSOC);
+		return $result;
+	}
+
+	
 }

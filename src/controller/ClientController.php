@@ -79,16 +79,16 @@ class ClientController extends JwtController{
             require_once('src/model/connection.php');
 
             if($_SERVER['REQUEST_METHOD'] == 'POST'){
-                    if(!empty($_POST['idC']) && !empty($_POST['sujet_rdv']) && !empty($_POST['idCr']) ){
+                    if(!empty($_POST['idC']) && !empty($_POST['sujet_rdv']) && !empty($_POST['idCr'] && !empty($_POST['date'])) ){
                         $db = new Database();
-                        $res = $db->insert('rdv' , ['sujet_rdv','idCr','idC'],[$_POST['sujet_rdv'],$_POST['idCr'],$_POST['idC']]);
+                        $res = $db->insert('rdv' , ['sujet_rdv','idCr','idC' ,'date'],[$_POST['sujet_rdv'],$_POST['idCr'],$_POST['idC'],$_POST['date']]);
                         if($res){
                             echo Database::message('Merci pour votre confiance', false);
                         }else {
                             echo Database::message('Echouer!', true);
                         }
                     }else{
-                        echo Database::message('Vueillez remplir tout le form', true);
+                        echo Database::message('Veuillez remplir tout le form', true);
                     }
             }else{
                 echo Database::message('probleme du serveur , desole pour les inconvinients', true);
@@ -103,6 +103,7 @@ class ClientController extends JwtController{
                 // echo $params[2];
                 $db = new Database();
                 $result = $db->delete('rdv', $params[2]);
+                
                 if($result){
                     echo Database::message('le rendez-vous est annullé avec succes', false);
                 }else {
@@ -113,16 +114,17 @@ class ClientController extends JwtController{
             }
         }
 
-        public function getRdv() {
+        public function getRdv($id) {
+            
             require_once('src/config/Header.php');
             require_once('src/model/connection.php');
             if($_SERVER['REQUEST_METHOD'] == 'GET') {
                 $params = explode('/', $_GET['p']);
                 // echo $params[2];
                 $db = new Database();
-                $result = $db->fetchRdv();
+                $result = $db->readSingleRdv($id);
                 if($result){
-                    echo Database::message('Voici les appointements disponible', false);
+                    echo Database::message($result, false);
                 }else {
                     echo Database::message('l`operation est echouer!', true);
                 }
