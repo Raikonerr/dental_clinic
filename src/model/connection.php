@@ -85,7 +85,7 @@ class Database
 	}
 
 	public function read($date){
-		$query=$this->conn->prepare("SELECT * FROM `creneau` where creneau.idCr not in(select idCr from rdv where date=?)");	
+		$query=$this->conn->prepare("SELECT * FROM `creneau` where creneau.idCr not in(select idCr from rdv where date=? )");	
 		$query->execute(array($date));
 		$result = $query->fetchAll(PDO::FETCH_ASSOC);
 		return $result;
@@ -94,7 +94,7 @@ class Database
 	public function readSingleRdv($id){
 		$query=$this->conn->prepare("SELECT r.idR , r.idCr , r.idC , sujet_rdv , date , debut , fin FROM `rdv` r join creneau c on r.idCr = c.idCr WHERE idC = ?");	
 		$query->execute(array($id));
-		$result = $query->fetch(PDO::FETCH_ASSOC);
+		$result = $query->fetchAll(PDO::FETCH_ASSOC);
 		return $result;
 	}
 
@@ -104,6 +104,15 @@ class Database
 		$result = $query->fetchAll(PDO::FETCH_ASSOC);
 		return $result;
 	}
+
+	public function update($table,$sjt,$date,$id){
+		$query=$this->conn->prepare("UPDATE `$table` SET `sujet_rdv`=? , `date`=? WHERE idR=?");
+		return  $query->execute([$sjt,$date,$id]);
+	}
+	
+
+	
+
 
 	
 }
